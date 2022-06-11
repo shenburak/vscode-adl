@@ -5,6 +5,7 @@ export class HelloWorldPanel {
   /**
    * Track the currently panel. Only allow a single panel to exist at a time.
    */
+
   public static currentPanel: HelloWorldPanel | undefined;
 
   public static readonly viewType = "hello-world";
@@ -13,7 +14,9 @@ export class HelloWorldPanel {
   private readonly _extensionUri: vscode.Uri;
   private _disposables: vscode.Disposable[] = [];
 
-  public static createOrShow(extensionUri: vscode.Uri) {
+  private readonly _documentText: string;
+
+  public static createOrShow(extensionUri: vscode.Uri, documentText: string) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
       : undefined;
@@ -42,7 +45,11 @@ export class HelloWorldPanel {
       }
     );
 
-    HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
+    HelloWorldPanel.currentPanel = new HelloWorldPanel(
+      panel,
+      extensionUri,
+      documentText
+    );
   }
 
   public static kill() {
@@ -50,13 +57,26 @@ export class HelloWorldPanel {
     HelloWorldPanel.currentPanel = undefined;
   }
 
-  public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-    HelloWorldPanel.currentPanel = new HelloWorldPanel(panel, extensionUri);
+  public static revive(
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    documentText: string
+  ) {
+    HelloWorldPanel.currentPanel = new HelloWorldPanel(
+      panel,
+      extensionUri,
+      documentText
+    );
   }
 
-  private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
+  private constructor(
+    panel: vscode.WebviewPanel,
+    extensionUri: vscode.Uri,
+    documentText: string
+  ) {
     this._panel = panel;
     this._extensionUri = extensionUri;
+    this._documentText = documentText;
 
     // Set the webview's initial html content
     this._update();
@@ -158,6 +178,7 @@ export class HelloWorldPanel {
         </script>
 			</head>
       <body>
+      ${this._documentText}
 			</body>
       <script src="${scriptUri}" nonce="${nonce}">
 			</html>`;

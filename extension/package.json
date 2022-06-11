@@ -42,7 +42,8 @@
     "commands": [
       {
         "command": "vstodo.helloWorld",
-        "title": "Hello World"
+        "category": "ADL",
+        "title": "Auto graph"
       },
       {
         "command": "vstodo.askQuestion",

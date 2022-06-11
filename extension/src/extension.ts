@@ -47,14 +47,34 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage(
         "token value is: " + TokenManager.getToken()
       );
-      // HelloWorldPanel.createOrShow(context.extensionUri);
+      // Get the active text editor
+      const editor = vscode.window.activeTextEditor;
+
+      if (editor) {
+        let document = editor.document;
+        const documentFileNameSplit = document.fileName.split(".");
+        const isAdl =
+          documentFileNameSplit[documentFileNameSplit.length - 1] === "adl";
+
+        if (!isAdl) {
+          return vscode.window.showErrorMessage("Please use with adl files");
+        }
+
+        // Get the document text
+        const documentText = document.getText();
+
+        // DO SOMETHING WITH `documentText`
+        HelloWorldPanel.createOrShow(context.extensionUri, documentText);
+      } else {
+        vscode.window.showErrorMessage("Please use with adl files");
+      }
     })
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand("vstodo.authenticate", () => {
       try {
-        authenticate();
+        authenticate(() => {});
       } catch (err) {
         console.log(err);
       }
@@ -63,17 +83,37 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("vstodo.refresh", async () => {
-      // HelloWorldPanel.kill();
-      // HelloWorldPanel.createOrShow(context.extensionUri);
+      // Get the active text editor
+      const editor = vscode.window.activeTextEditor;
+
+      if (editor) {
+        let document = editor.document;
+        const documentFileNameSplit = document.fileName.split(".");
+        const isAdl =
+          documentFileNameSplit[documentFileNameSplit.length - 1] === "adl";
+
+        if (!isAdl) {
+          return vscode.window.showErrorMessage("Please use with adl files");
+        }
+
+        // Get the document text
+        const documentText = document.getText();
+
+        // DO SOMETHING WITH `documentText`
+        HelloWorldPanel.kill();
+        HelloWorldPanel.createOrShow(context.extensionUri, documentText);
+      } else {
+        vscode.window.showErrorMessage("Please use with adl files");
+      }
       await vscode.commands.executeCommand("workbench.action.closeSidebar");
       await vscode.commands.executeCommand(
         "workbench.view.extension.vstodo-sidebar-view"
       );
-      // setTimeout(() => {
-      //   vscode.commands.executeCommand(
-      //     "workbench.action.webview.openDeveloperTools"
-      //   );
-      // }, 500);
+      setTimeout(() => {
+        vscode.commands.executeCommand(
+          "workbench.action.webview.openDeveloperTools"
+        );
+      }, 500);
     })
   );
 
